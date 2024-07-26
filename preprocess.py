@@ -466,56 +466,6 @@ def add_transformations(daily_df, test_date, product_names, group_by_column):
         daily_df["product_trend_4days_lag5"] = daily_df["product_trend"].shift(5)
         daily_df["product_seasonal_4days_lag5"] = daily_df["product_seasonal"].shift(5)
 
-        # daily_df['if_payday'] = False
-
-        # def closest_friday_before(date):
-        #     if date.weekday() == 4:  # If the date is already a Friday
-        #         return date
-        #     days_to_friday = (date.weekday() - 4) % 7
-        #     return date - pd.Timedelta(days=days_to_friday)
-
-        # Add a column to track if payday
-        # daily_df['payday'] = False
-
-        # def last_day_of_month(date):
-        #     next_month = date.replace(day=28) + pd.DateOffset(days=4)
-        #     return next_month - pd.DateOffset(days=next_month.day)
-
-        # # Iterate through each row and determine if the date is a payday
-        # for index, row in daily_df.iterrows():
-        #     date = row['ds']
-        #     day = date.day
-
-        #     # Determine the potential payday for the 15th and the 30th
-        #     if day <= 15:
-        #         potential_fifteenth = pd.Timestamp(year=date.year, month=date.month, day=15)
-        #         payday = closest_friday_before(potential_fifteenth)
-        #     else:
-        #         try:
-        #             potential_thirtieth = pd.Timestamp(year=date.year, month=date.month, day=30)
-        #         except ValueError:
-        #             potential_thirtieth = last_day_of_month(date)
-        #         payday = closest_friday_before(potential_thirtieth)
-
-        #     # Mark the date as payday if it matches the calculated payday
-        #     if date == payday:
-        #         daily_df.at[index, 'payday'] = True
-
-        # daily_df['time_price_interaction'] =
-
-        # daily_df["time_feature"] = (
-        #     daily_df["Days Since Introduction"]
-        #     - daily_df["Days Since Introduction"].min()
-        # ) / (
-        #     daily_df["Days Since Introduction"].max()
-        #     - daily_df["Days Since Introduction"].min()
-        # )
-
-        # Create an interaction term between time and price
-        # daily_df["time_price_interaction"] = (
-        #     daily_df["time_feature"] * daily_df["Scaled_Price_Credit_A_day1"]
-        # )
-
         daily_df.fillna(method="ffill", inplace=True)  # Frontfill
         daily_df.fillna(method="bfill", inplace=True)  # Backfill
 
