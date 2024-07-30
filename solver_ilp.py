@@ -458,7 +458,7 @@ def post_process_results(config):
     logger.info(f"Final results saved to {config['FINAL_OUTPUT_PATH']}")
 
 
-def main(CONFIG: Dict):
+def select_prices(CONFIG: Dict):
     try:
         xr_data = initial_setup(CONFIG)
         model, price_indices = define_model(xr_data)
@@ -484,4 +484,4 @@ if __name__ == "__main__":
         "OUTPUT_PATH": "Solution4.csv",
         "FINAL_OUTPUT_PATH": "data/predictions/07262024_EKT_Physical_Stores_Prices_Test.csv",
     }
-    main(CONFIG)
+    select_prices(CONFIG)
