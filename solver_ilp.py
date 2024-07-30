@@ -381,6 +381,7 @@ def solve_model(
         logger.error(f"Error in solve_model: {str(e)}")
         raise
 
+
 def select_price_for_not_priced(not_priced, date, national_price):
     products = not_priced["SKU"].values
     predictions = pd.DataFrame()
@@ -398,7 +399,9 @@ def select_price_for_not_priced(not_priced, date, national_price):
                     "SKU": product_id,
                     "Best Price Credit A": credit_A_price,
                     "Best Price Cash A": Cash_A_price,
-                    "Best Price Credit DE": filtered_row["Control Precio DE ($)"].iloc[0],
+                    "Best Price Credit DE": filtered_row["Control Precio DE ($)"].iloc[
+                        0
+                    ],
                     "Best Price Cash DE": filtered_row["Control Precio DE ($)"].iloc[0],
                 }
             ]
@@ -412,28 +415,48 @@ def select_price_for_not_priced(not_priced, date, national_price):
         predictions = pd.concat([predictions, new_row])
     return predictions
 
+
 def post_process_results(config):
-    df = pd.read_csv(config['OUTPUT_PATH'], index_col=0)
-    df['SKU'] = df['Product']
-    df["Best Price Credit A"] = df['Catalan Credit A']
+    df = pd.read_csv(config["OUTPUT_PATH"], index_col=0)
+    df["SKU"] = df["Product"]
+    df["Best Price Credit A"] = df["Catalan Credit A"]
     df["Best Price Cash A"] = df["Catalan Cash A"]
     df["Best Price Credit DE"] = df["National DE"]
     df["Best Price Cash DE"] = df["National DE"]
-    df["Date"] = [config['DATE']] * len(df)
-    df = df.drop(['Product','Catalan Credit A',"Catalan Cash A","National DE","Min Credit A","Max Credit A","Demand","Revenue","National Credit A","National Cash A"], axis=1)
+    df["Date"] = [config["DATE"]] * len(df)
+    df = df.drop(
+        [
+            "Product",
+            "Catalan Credit A",
+            "Catalan Cash A",
+            "National DE",
+            "Min Credit A",
+            "Max Credit A",
+            "Demand",
+            "Revenue",
+            "National Credit A",
+            "National Cash A",
+        ],
+        axis=1,
+    )
 
-    national_price = pd.read_csv(config['NATIONAL_PRICE_PATH'])
+    national_price = pd.read_csv(config["NATIONAL_PRICE_PATH"])
 
-    temp = national_price.merge(df, on='SKU', how='outer', indicator=True)
-    only_in_df1 = temp[temp['_merge'] == 'left_only']
+    temp = national_price.merge(df, on="SKU", how="outer", indicator=True)
+    only_in_df1 = temp[temp["_merge"] == "left_only"]
 
-    logger.info("Selecting prices for products where the solver was unable to find a solution.")
+    logger.info(
+        "Selecting prices for products where the solver was unable to find a solution."
+    )
 
-    not_priced_solutions = select_price_for_not_priced(only_in_df1, config['DATE'], national_price)
+    not_priced_solutions = select_price_for_not_priced(
+        only_in_df1, config["DATE"], national_price
+    )
 
     combined = pd.concat([df, not_priced_solutions])
-    combined.to_csv(config['FINAL_OUTPUT_PATH'])
+    combined.to_csv(config["FINAL_OUTPUT_PATH"])
     logger.info(f"Final results saved to {config['FINAL_OUTPUT_PATH']}")
+
 
 def main(CONFIG: Dict):
     try:
@@ -452,13 +475,13 @@ def main(CONFIG: Dict):
 
 if __name__ == "__main__":
     CONFIG = {
-        'FOLDER_NAME': 'Experiments/Experiment 1',
-        'MODEL_NAMES': ['CatBoostRegressor'],
-        'DATE': '2024-07-26',
-        'SIZE': 100,
-        'SKU_MAP_PATH': 'data/sku_product_name_map.csv',
-        'NATIONAL_PRICE_PATH': 's3://elektra-data/commercial_comments/national_price_20240722.csv',
-        'OUTPUT_PATH': 'Solution4.csv',
-        'FINAL_OUTPUT_PATH': 'data/predictions/07262024_EKT_Physical_Stores_Prices_Test.csv'
+        "FOLDER_NAME": "Experiments/Experiment 1",
+        "MODEL_NAMES": ["CatBoostRegressor"],
+        "DATE": "2024-07-26",
+        "SIZE": 100,
+        "SKU_MAP_PATH": "data/sku_product_name_map.csv",
+        "NATIONAL_PRICE_PATH": "s3://elektra-data/commercial_comments/national_price_20240722.csv",
+        "OUTPUT_PATH": "Solution4.csv",
+        "FINAL_OUTPUT_PATH": "data/predictions/07262024_EKT_Physical_Stores_Prices_Test.csv",
     }
     main(CONFIG)
