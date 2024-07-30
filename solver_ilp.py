@@ -33,7 +33,6 @@ def initial_setup(config: Dict) -> Dict[str, xr.DataArray]:
 
         sorted_product_paths = sorted(all_product_paths)
 
-        sku_map = pd.read_csv(config["SKU_MAP_PATH"])
         national_price_df = pd.read_csv(config["NATIONAL_PRICE_PATH"], index_col=0)
 
         data = {
@@ -219,9 +218,6 @@ def add_constraints(
 ) -> None:
     for product in xr_data["prices_xr"].product.values:
         product_idx = xr_data["prices_xr"].get_index("product").get_loc(product)
-        national_price_creditA = (
-            xr_data["national_price_creditA_xr"].sel(product=product).values
-        )
         national_price_DE = xr_data["national_price_DE_xr"].sel(product=product).values
 
         model += (
