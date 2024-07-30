@@ -20,13 +20,6 @@ from utils import (
     plot_3d_Revenue,
 )
 
-# def scale_back_prices(sku, scaled_price, first_price_map, scale_factor=1000):
-#     if sku in first_price_map:
-#         original_price = (scaled_price / scale_factor) * first_price_map[sku]
-#         return original_price
-#     else:
-#         raise ValueError(f"SKU {sku} not found in the first price map.")
-
 
 def scale_back_prices(
     criterion_value, criterion_type, scaled_price, first_price_df, scale_factor=1000
@@ -60,6 +53,7 @@ def generate_profit_uncertainity(
     folder_name,
     sub_folder_name,
     group_by_column,
+    national_price_df,
 ):
     df = features[columns_3d]
 
@@ -80,17 +74,6 @@ def generate_profit_uncertainity(
         columns_3d
     ]
 
-    # if model_name == 'CatBoostRegressor':
-    #     forcaster = CatboostForecaster()
-    # elif model_name == 'LightGBM':
-    #     forcaster = LightGBMForecaster()
-    # elif model_name == 'CatBoostRegressorWithUncertainity':
-    #     forcaster = CatboostWithUncertainityForecaster()
-    # elif model_name == 'CatBoostMultiOutputRegressor':
-    #         forcaster = CatBoostMultiOutputRegressorForecaster()
-    # else:
-    #     forcaster = XGBoostForecaster()
-
     model_mapping = {
         "CatBoostRegressor": CatboostForecaster,
         "LightGBM": LightGBMForecaster,
@@ -110,16 +93,18 @@ def generate_profit_uncertainity(
     precision = 3
 
     sku_map = pd.read_csv("data/sku_product_name_map.csv")
+
     first_price = sku_map[sku_map[group_by_column] == product_name].iloc[0][
         "Introductory_price"
     ]
     scaling_factor = 1000 / first_price
 
-    national_price_df = pd.read_csv("data/national_price_20240722.csv", index_col=0)
+    # national_price_df = pd.read_csv("data/national_price_20240722.csv", index_col=0)
 
     product_national_price = national_price_df[
         national_price_df[group_by_column] == product_name
     ].iloc[0]
+
     national_price_creditA = product_national_price["Control Credit Precio A"]
     national_price_cashA = product_national_price["Control Cash Precio A"]
 

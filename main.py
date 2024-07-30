@@ -709,7 +709,7 @@ temp = [31051762]
 skus_not_priced = []
 count = 0
 
-national_price_map = pd.read_csv("data/national_price_20240722.csv")
+national_price_df = pd.read_csv("s3://elektra-data/commercial_comments/national_price_20240722.csv")
 
 daily_data = pd.read_csv(
             "s3://elektra-data/transformed/scaled_Sanitized_Master_Physical_stores_24072024.csv"
@@ -725,7 +725,7 @@ df_scaled = df_scaled.drop(["level_1"], axis=1)
 df_updated = update_days_since_introduction(df_scaled)
 daily_data = df_updated.drop(["level_1"], axis=1)
 
-for product in tqdm(top_products):
+for product in tqdm(physical_sku_ls):
     count += 1
     print('Product - ',product)
     try:
@@ -810,7 +810,9 @@ for product in tqdm(top_products):
                                         product_name=product_names,
                                         folder_name=folder_name,
                                         sub_folder_name=sub_folder_name,
-                                        group_by_column = group_by_column)
+                                        group_by_column = group_by_column,
+                                        national_price_df=national_price_df
+                                        )
             elif day.weekday() == 4:
                 print('date',day)
 
@@ -828,7 +830,9 @@ for product in tqdm(top_products):
                                         product_name=product_names,
                                         folder_name=folder_name,
                                         sub_folder_name=sub_folder_name,
-                                        group_by_column = group_by_column)
+                                        group_by_column = group_by_column,
+                                        national_price_df=national_price_df
+                                        )
             end_time = time.time()
             execution_time = end_time - start_time
 
